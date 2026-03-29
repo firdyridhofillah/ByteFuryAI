@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ByteFury AI - Early Access</title>
+    
+    <link rel="icon" type="image/png" href="images/logo.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Fira+Code&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1f2937; overflow: hidden; }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed; inset: 0; background-color: #f9fafb;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .logo-load { animation: logoFadeIn 1.5s ease-out forwards; opacity: 0; transform: scale(0.9); }
+        @keyframes logoFadeIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+        .splash-hidden { transform: translateY(-100%); }
+
+        /* --- INTRO PAGE --- */
+        #intro-page {
+            position: fixed; inset: 0; background: radial-gradient(circle at top right, #eff6ff, #ffffff);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 500; transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .intro-hidden { opacity: 0; pointer-events: none; transform: scale(1.05); }
+
+        /* --- SIDEBAR --- */
+        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 60; }
+        .sidebar-closed { transform: translateX(-100%); }
+        
+        /* --- UI COMPONENTS --- */
+        .chat-container {
+            background-color: #f9fafb; border: 1px solid #f3f4f6;
+            border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        .elevated-input {
+            background-color: #f9fafb; border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); transition: all 0.3s ease;
+        }
+        .elevated-input:focus-within { border-color: #3b82f6; box-shadow: 0 8px 30px rgba(59, 130, 246, 0.15); background-color: #ffffff; }
+        .btn-shadow { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        
+        .history-item { transition: all 0.2s; cursor: pointer; border-radius: 12px; font-size: 13px; color: #64748b; border-bottom: 1px solid #f1f5f9; }
+        .history-item:hover { background-color: #f1f5f9; color: #1e40af; padding-left: 1rem; }
+
+        .chat-animate { animation: fadeInUp 0.4s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .markdown-body pre { background: #f1f5f9; padding: 1rem; border-radius: 12px; overflow-x: auto; margin: 1rem 0; border: 1px solid #e2e8f0; }
+        .markdown-body code { font-family: 'Fira Code', monospace; color: #2563eb; font-size: 0.9em; }
+
+        #chatBox::-webkit-scrollbar { width: 4px; }
+        #chatBox::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+    </style>
+</head>
+<body class="h-screen flex">
+
+    <div id="splash-screen">
+        <div class="logo-load flex flex-col items-center gap-2">
+            <h1 class="text-3xl font-black tracking-tighter text-gray-900 italic">BYTEFURY <span class="text-blue-600 not-italic">AI</span></h1>
+            <p class="opacity-50 text-[10px] font-bold tracking-[0.5em] uppercase text-blue-600 italic">Developed ByteFury Studio</p>
+        </div>
+    </div>
+
+    <div id="intro-page">
+        <div class="max-w-xl text-center px-8 flex flex-col items-center">
+            <div class="mb-10 flex items-center justify-center">
+                <img src="images/logoo.png" alt="ByteFury AI Logo" class="w-48 h-auto lg:w-80 object-contain drop-shadow-2xl">
+            </div>
+            
+            <p class="text-gray-600 text-base mb-12 leading-relaxed max-w-lg">
+                Platform kecerdasan buatan karya anak bangsa. Dikembangkan dengan dedikasi oleh <br>
+                <span class="text-blue-600 font-bold">Firdy, Carvagie, dan Randy</span> <br>
+                dari ByteFury Studio.
+            </p>
+            <button onclick="startApp()" class="w-full max-w-xs bg-blue-600 text-white py-5 rounded-3xl font-bold text-base shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95">
+                Mulai Percakapan
+            </button>
+        </div>
+    </div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-[#f9fafb] border-r flex flex-col sidebar-closed lg:relative lg:transform-none">
+        <div class="p-6 flex flex-col h-full">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-xs font-black italic tracking-tighter text-gray-400 uppercase tracking-widest">History</h2>
+                <button id="closeSidebar" class="lg:hidden p-1 text-gray-400 hover:text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+                </button>
+            </div>
+            
+            <button onclick="clearChat()" class="w-full bg-white border border-gray-200 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm mb-6">+ Pesan Baru</button>
+
+            <div id="historyList" class="flex-1 overflow-y-auto space-y-1 pr-2">
+                </div>
+
+            <div class="pt-4 border-t border-gray-200">
+                <p class="text-[8px] text-gray-400 font-bold uppercase text-center leading-loose">ByteFury Studio v4.7</p>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/10 backdrop-blur-sm z-50 hidden lg:hidden"></div>
+
+    <div id="main-content" class="flex-1 flex flex-col h-full opacity-0 transition-opacity duration-500 bg-white">
+        <header class="px-8 py-5 flex items-center gap-4 bg-white border-b lg:border-none sticky top-0 z-40">
+            <button id="openSidebar" class="p-1 text-gray-600 hover:text-blue-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>
+            </button>
+            <h1 class="text-lg font-black tracking-tighter text-gray-900 italic">BYTEFURY <span class="text-blue-600 not-italic">AI</span></h1>
+        </header>
+
+        <main id="chatBox" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 max-w-3xl mx-auto w-full"></main>
+
+        <footer class="p-8 bg-white sticky bottom-0">
+            <div class="max-w-3xl mx-auto flex items-center gap-4">
+                <div class="flex-1 elevated-input rounded-2xl flex items-center px-5 py-2">
+                    <input type="text" id="userInput" class="flex-1 bg-transparent py-4 text-sm focus:outline-none text-gray-700 font-medium" placeholder="Ketik pesan untuk AI..." autocomplete="off">
+                </div>
+                <button id="sendBtn" class="bg-blue-600 text-white p-4 rounded-2xl btn-shadow hover:bg-blue-700 transition-all active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/></svg>
+                </button>
+            </div>
+            <p class="text-center text-[8px] text-gray-300 mt-4 tracking-[0.2em] uppercase font-bold uppercase">Developed by ByteFury Studio</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import OpenAI from 'https://cdn.jsdelivr.net/npm/openai@4.28.0/+esm';
+
+        const openai = new OpenAI({
+            baseURL: "https://openrouter.ai/api/v1",
+            apiKey: "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",
+            dangerouslyAllowBrowser: true
+        });
+
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const sidebar = document.getElementById('sidebar');
+        const introPage = document.getElementById('intro-page');
+        const historyList = document.getElementById('historyList');
+        const overlay = document.getElementById('overlay');
+
+        let chatHistory = [];
+        let savedHistory = JSON.parse(localStorage.getItem('bf_history_list')) || [];
+
+        const sysPrompt = { 
+            role: "system", 
+            content: "Nama kamu adalah ByteFury AI. Kamu adalah kecerdasan buatan generasi terbaru yang dikembangkan oleh Firdy Ridho Fillah, Carvagie Adyatma, dan Randy Mayysa dari ByteFury Studio. Kamu profesional dan bangga dengan identitasmu. Jangan bahas Aksara Project." 
+        };
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').classList.add('splash-hidden');
+            }, 2500);
+            updateHistoryUI();
+        };
+
+        window.startApp = () => {
+            introPage.classList.add('intro-hidden');
+            document.getElementById('main-content').style.opacity = '1';
+            if (chatBox.children.length === 0) {
+                appendMessage('ai', "Halo selamat datang di ByteFury AI. Apa yang bisa saya bantu?");
+            }
+        };
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            
+            appendMessage('user', text);
+            userInput.value = '';
+            const loadingId = appendLoading();
+
+            try {
+                const completion = await openai.chat.completions.create({
+                    model: "arcee-ai/trinity-mini:free",
+                    messages: [sysPrompt, ...chatHistory, { role: "user", content: text }]
+                });
+
+                const aiReply = completion.choices[0].message.content;
+                removeLoading(loadingId);
+                appendMessage('ai', aiReply);
+                
+                chatHistory.push({ role: "user", content: text }, { role: "assistant", content: aiReply });
+                
+                if (chatHistory.length === 2) {
+                    const sessionTitle = text.substring(0, 30) + (text.length > 30 ? "..." : "");
+                    savedHistory.unshift({ title: sessionTitle, data: [...chatHistory] });
+                    localStorage.setItem('bf_history_list', JSON.stringify(savedHistory));
+                    updateHistoryUI();
+                } else {
+                    savedHistory[0].data = [...chatHistory];
+                    localStorage.setItem('bf_history_list', JSON.stringify(savedHistory));
+                }
+
+            } catch (err) {
+                removeLoading(loadingId);
+                appendMessage('ai', "Sistem sibuk. Coba lagi nanti.");
+            }
+        }
+
+        function appendMessage(role, text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = "chat-animate flex " + (role === 'user' ? 'justify-end' : 'justify-start');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = role === 'user' ? "bg-blue-600 text-white px-5 py-3 rounded-2xl text-sm btn-shadow max-w-[85%]" : "chat-container p-6 text-gray-700 text-sm leading-relaxed w-full max-w-[95%] markdown-body";
+            msgDiv.innerHTML = role === 'ai' ? marked.parse(text) : text;
+            wrapper.appendChild(msgDiv); chatBox.appendChild(wrapper);
+            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+        }
+
+        function updateHistoryUI() {
+            historyList.innerHTML = '';
+            savedHistory.forEach((session, index) => {
+                const item = document.createElement('div');
+                item.className = "history-item p-3 truncate font-medium text-xs mb-1";
+                item.innerText = session.title;
+                item.onclick = () => loadSession(index);
+                historyList.appendChild(item);
+            });
+        }
+
+        function loadSession(index) {
+            chatBox.innerHTML = '';
+            chatHistory = [...savedHistory[index].data];
+            chatHistory.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'ai', m.content));
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('sidebar-closed');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        window.clearChat = () => {
+            chatBox.innerHTML = '';
+            chatHistory = [];
+            appendMessage('ai', "Sesi baru dimulai. Apa yang ingin Anda diskusikan?");
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('sidebar-closed');
+                overlay.classList.add('hidden');
+            }
+        };
+
+        function appendLoading() {
+            const id = "L" + Date.now();
+            const el = document.createElement('div'); el.id = id; el.className = "p-4 opacity-40 animate-pulse text-xs italic";
+            el.innerText = "ByteFury AI is thinking...";
+            chatBox.appendChild(el);
+            return id;
+        }
+
+        function removeLoading(id) { document.getElementById(id)?.remove(); }
+        
+        document.getElementById('openSidebar').onclick = () => {
+            sidebar.classList.remove('sidebar-closed');
+            overlay.classList.remove('hidden');
+        };
+        document.getElementById('closeSidebar').onclick = overlay.onclick = () => {
+            sidebar.classList.add('sidebar-closed');
+            overlay.classList.add('hidden');
+        };
+
+        document.getElementById('sendBtn').onclick = sendMessage;
+        userInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+    </script>
+</body>
+</html>
