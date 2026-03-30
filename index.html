@@ -3,131 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintenance | ByteFury AI</title>
+    <title>ByteFury AI - Early Access</title>
+    
+    <link rel="icon" type="image/png" href="images/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked-katex-extension@1.0.2/lib/index.umd.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Fira+Code:wght@400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
         
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: screen;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1f2937; overflow-x: hidden; }
 
-        /* --- BACKGROUND DECORATION --- */
-        .bg-circle {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.5;
-        }
-        .circle-1 { width: 400px; height: 400px; background: #dbeafe; top: -100px; right: -50px; }
-        .circle-2 { width: 300px; height: 300px; background: #eff6ff; bottom: -50px; left: -50px; }
+        /* --- SPLASH & INTRO --- */
+        #splash-screen { position: fixed; inset: 0; background-color: #f9fafb; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
+        .splash-hidden { transform: translateY(-100%); }
+        #intro-page { position: fixed; inset: 0; background: radial-gradient(circle at top right, #eff6ff, #ffffff); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 500; transition: all 0.5s ease; }
+        .intro-hidden { opacity: 0; pointer-events: none; transform: scale(1.02); }
 
-        /* --- ELEGANT CARD --- */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03);
-            border-radius: 40px;
-        }
+        /* --- SIDEBAR --- */
+        #sidebar { transition: transform 0.3s ease; z-index: 60; background-color: #f8fafc; border-right: 1px solid #e2e8f0; }
+        .sidebar-closed { transform: translateX(-100%); }
 
-        .code-pill {
-            font-family: 'Fira Code', monospace;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            padding: 8px 20px;
-            border-radius: 99px;
-            font-size: 12px;
-            color: #3b82f6;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
+        /* --- ADVANCED MARKDOWN STYLING (v6.0) --- */
+        .markdown-body { line-height: 1.8; font-size: 0.95rem; color: #334155; word-spacing: 0.05em; }
+        .markdown-body p { margin-bottom: 1.5rem; white-space: pre-wrap; }
+        
+        /* List & Alignment */
+        .markdown-body ul, .markdown-body ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+        .markdown-body li { margin-bottom: 0.75rem; }
+        .markdown-body strong { color: #1e293b; font-weight: 700; }
 
-        /* --- ANIMATIONS --- */
-        .dot-pulse {
-            animation: pulse 2s infinite;
-        }
+        /* Table Styling with Borders */
+        .markdown-body table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+        .markdown-body th { background-color: #f8fafc; font-weight: 700; text-align: left; padding: 12px 16px; border: 1px solid #e2e8f0; }
+        .markdown-body td { padding: 12px 16px; border: 1px solid #e2e8f0; vertical-align: top; }
+        .markdown-body tr:nth-child(even) { background-color: #f9fafb; }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.5; }
-        }
+        /* KaTeX Spacing */
+        .katex-display { margin: 1.5rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; }
 
-        .shimmer {
-            background: linear-gradient(90deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%);
-            background-size: 200% 100%;
-            animation: shimmer 2.5s infinite linear;
-        }
+        /* Code Block */
+        .code-block-wrapper { margin: 1.5rem 0; border-radius: 12px; overflow: hidden; background: #1e293b; border: 1px solid #334155; }
+        .code-header { background: #1e293b; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-family: 'Fira Code', monospace; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #334155; }
+        .markdown-body pre { background: transparent !important; color: #e2e8f0 !important; padding: 1.25rem; overflow-x: auto; margin: 0; font-family: 'Fira Code', monospace; }
 
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
+        /* --- BUBBLES --- */
+        .user-bubble { background-color: #3b82f6; color: white; border-radius: 20px 20px 4px 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); }
+        .history-item-container { position: relative; width: 100%; }
+        .history-item { transition: all 0.2s; cursor: pointer; border-radius: 10px; font-size: 13px; color: #475569; padding: 12px 40px 12px 12px; border-bottom: 1px solid #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .history-item:hover { background-color: #f1f5f9; color: #2563eb; }
+        .btn-delete-history { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0; transition: opacity 0.2s; padding: 6px; color: #94a3b8; border-radius: 6px; z-index: 10; }
+        .history-item-container:hover .btn-delete-history { opacity: 1; }
     </style>
 </head>
-<body class="p-6">
+<body class="h-screen flex">
 
-    <div class="bg-circle circle-1"></div>
-    <div class="bg-circle circle-2"></div>
-
-    <div class="max-w-2xl w-full text-center relative">
-        <div class="flex justify-center mb-10">
-            <div class="code-pill flex items-center gap-3">
-                <span class="w-2 h-2 bg-blue-500 rounded-full dot-pulse"></span>
-                ByteFury Studio
-            </div>
-        </div>
-
-        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6">
-            Sedang <span class="text-blue-600">Peningkatan.</span>
-        </h1>
-        
-        <p class="text-slate-500 text-lg md:text-xl font-medium max-w-lg mx-auto leading-relaxed mb-12">
-            ByteFury AI sedang diperbarui untuk memberikan pengalaman yang lebih cerdas dan cepat.
-        </p>
-
-        <div class="glass-card p-10 mb-12">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Core Architecture Status</h2>
-                <span class="text-[10px] font-bold text-blue-500">92% SYNCED</span>
-            </div>
-            
-            <div class="grid grid-cols-6 gap-4">
-                <div class="h-12 rounded-2xl shimmer"></div>
-                <div class="h-12 rounded-2xl bg-blue-50"></div>
-                <div class="h-12 rounded-2xl shimmer"></div>
-                <div class="h-12 rounded-2xl bg-blue-600"></div>
-                <div class="h-12 rounded-2xl shimmer"></div>
-                <div class="h-12 rounded-2xl bg-blue-50"></div>
-                
-                <div class="h-12 rounded-2xl bg-blue-50"></div>
-                <div class="h-12 rounded-2xl shimmer"></div>
-                <div class="h-12 rounded-2xl bg-blue-100"></div>
-                <div class="h-12 rounded-2xl shimmer"></div>
-                <div class="h-12 rounded-2xl bg-blue-50"></div>
-                <div class="h-12 rounded-2xl shimmer"></div>
-            </div>
-        </div>
-
-        <div class="space-y-4">
-            <p class="text-sm font-semibold text-slate-400 tracking-widest uppercase">
-                ByteFury Studio &bull; 2026
-            </p>
-            <div class="flex justify-center gap-6">
-                <div class="h-1 w-12 bg-blue-100 rounded-full"></div>
-                <div class="h-1 w-12 bg-blue-600 rounded-full"></div>
-                <div class="h-1 w-12 bg-blue-100 rounded-full"></div>
-            </div>
+    <div id="splash-screen">
+        <div class="flex flex-col items-center gap-2">
+            <h1 class="text-3xl font-black tracking-tighter italic">BYTEFURY <span class="text-blue-600 not-italic">AI</span></h1>
+            <p class="opacity-50 text-[10px] font-bold tracking-[0.5em] uppercase text-blue-600 italic">Developed ByteFury Studio</p>
         </div>
     </div>
 
+    <div id="intro-page">
+        <div class="max-w-xl text-center px-8 flex flex-col items-center">
+            <img src="images/logoo.png" alt="Logo" class="w-48 lg:w-64 mb-8 drop-shadow-2xl">
+            <p class="text-gray-600 text-base mb-10 leading-relaxed">
+                Platform kecerdasan buatan karya anak bangsa. Dikembangkan dengan dedikasi oleh <br>
+                <span class="text-blue-600 font-bold">Firdy, Carvagie, dan Randy</span> <br>
+                dari <span class="italic font-semibold">ByteFury Studio</span>.
+            </p>
+            <button onclick="startApp()" class="w-full max-w-xs bg-blue-600 text-white py-5 rounded-full font-bold shadow-xl hover:bg-blue-700 transition-all active:scale-95">Mulai Percakapan</button>
+        </div>
+    </div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 border-r flex flex-col sidebar-closed lg:relative lg:transform-none">
+        <div class="p-6 flex flex-col h-full">
+            <div class="mb-8 text-gray-400 font-bold text-[10px] uppercase tracking-widest">History</div>
+            <button onclick="clearChat()" class="w-full bg-white border border-gray-200 py-3 rounded-xl text-[10px] font-bold mb-6 hover:bg-gray-50">+ Chat Baru</button>
+            <div id="historyList" class="flex-1 overflow-y-auto space-y-1"></div>
+        </div>
+    </aside>
+
+    <div id="overlay" class="fixed inset-0 bg-black/10 backdrop-blur-sm z-50 hidden lg:hidden"></div>
+
+    <div id="main-content" class="flex-1 flex flex-col h-full bg-white">
+        <header class="px-8 py-4 flex items-center border-b sticky top-0 bg-white/90 backdrop-blur-md z-40">
+            <button id="openSidebar" class="lg:hidden mr-4 text-gray-600 text-xl">☰</button>
+            <h1 class="text-lg font-black italic uppercase">ByteFury <span class="text-blue-600 not-italic">AI</span></h1>
+        </header>
+
+        <main id="chatBox" class="flex-1 overflow-y-auto px-6 py-10 space-y-10 max-w-4xl mx-auto w-full"></main>
+
+        <footer class="p-6 bg-white">
+            <div class="max-w-3xl mx-auto flex items-end gap-3">
+                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-2xl flex items-center px-5 py-2 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                    <textarea id="userInput" rows="1" class="flex-1 bg-transparent py-2 text-sm focus:outline-none resize-none" placeholder="Tanya sesuatu..."></textarea>
+                </div>
+                <button id="sendBtn" class="bg-blue-600 text-white p-4 rounded-xl shadow-lg hover:bg-blue-700 active:scale-90 transition-all">➤</button>
+            </div>
+            <p class="text-[9px] text-center text-gray-400 mt-4 font-bold tracking-widest uppercase">ByteFury Studio v6.0</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import OpenAI from 'https://cdn.jsdelivr.net/npm/openai@4.28.0/+esm';
+        
+        marked.use(markedKatex({ throwOnError: false, output: 'html' }));
+
+        const renderer = new marked.Renderer();
+        renderer.code = function({text, lang}) {
+            const content = text || '';
+            const b64 = btoa(unescape(encodeURIComponent(content)));
+            return `<div class="code-block-wrapper">
+                <div class="code-header"><span>${lang || 'code'}</span>
+                    <button onclick="copyToClipboard(this, '${b64}')" class="btn-copy-minimal">Copy</button>
+                </div>
+                <pre><code>${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+            </div>`;
+        };
+        marked.setOptions({ renderer, breaks: true, gfm: true });
+
+        const openai = new OpenAI({
+            baseURL: "https://openrouter.ai/api/v1",
+            apiKey: "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",
+            dangerouslyAllowBrowser: true
+        });
+
+        // System Prompt khusus untuk kerapihan format
+        const sysPrompt = { 
+            role: "system", 
+            content: "Kamu adalah ByteFury AI. Selalu gunakan tabel Markdown untuk perbandingan. Gunakan poin-poin yang rapi dengan format 'Item: Penjelasan' agar titik dua sejajar. Pastikan ada spasi yang benar antar kata. Gunakan LaTeX untuk rumus matematika." 
+        };
+
+        let chatHistory = [];
+        let savedHistory = JSON.parse(localStorage.getItem('bf_history_list')) || [];
+
+        window.onload = () => {
+            setTimeout(() => document.getElementById('splash-screen').classList.add('splash-hidden'), 2500);
+            updateHistoryUI();
+        };
+
+        window.startApp = () => {
+            document.getElementById('intro-page').classList.add('intro-hidden');
+            if (chatBox.children.length === 0) appendMessage('ai', "Halo! Saya **ByteFury AI**. Silakan ajukan pertanyaan atau minta perbandingan sesuatu.");
+        };
+
+        async function sendMessage() {
+            const text = document.getElementById('userInput').value.trim();
+            if (!text) return;
+            appendMessage('user', text);
+            document.getElementById('userInput').value = '';
+            const loadingId = appendLoading();
+
+            try {
+                const completion = await openai.chat.completions.create({
+                    model: "arcee-ai/trinity-large-preview:free",
+                    messages: [sysPrompt, ...chatHistory, { role: "user", content: text }]
+                });
+                const aiReply = completion.choices[0].message.content;
+                removeLoading(loadingId);
+                appendMessage('ai', aiReply);
+                chatHistory.push({ role: "user", content: text }, { role: "assistant", content: aiReply });
+                saveSession(text);
+            } catch (err) {
+                removeLoading(loadingId);
+                appendMessage('ai', "Maaf, koneksi terputus.");
+            }
+        }
+
+        function appendMessage(role, text) {
+            const wrap = document.createElement('div');
+            wrap.className = "flex flex-col " + (role === 'user' ? 'items-end' : 'items-start');
+            const msg = document.createElement('div');
+            msg.className = role === 'user' ? "user-bubble px-5 py-3 text-sm max-w-[85%]" : "markdown-body p-2 w-full max-w-full relative group";
+            
+            if (role === 'ai') {
+                msg.innerHTML = marked.parse(text);
+            } else {
+                msg.innerText = text;
+            }
+            wrap.appendChild(msg);
+            document.getElementById('chatBox').appendChild(wrap);
+            document.getElementById('chatBox').scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+        }
+
+        function saveSession(text) {
+            if (chatHistory.length === 2) {
+                savedHistory.unshift({ id: Date.now(), title: text.substring(0, 30) + "...", data: [...chatHistory] });
+            } else if (savedHistory.length > 0) {
+                savedHistory[0].data = [...chatHistory];
+            }
+            localStorage.setItem('bf_history_list', JSON.stringify(savedHistory));
+            updateHistoryUI();
+        }
+
+        function updateHistoryUI() {
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+            savedHistory.forEach((s, index) => {
+                const container = document.createElement('div');
+                container.className = "history-item-container";
+                const item = document.createElement('div');
+                item.className = "history-item";
+                item.innerText = s.title;
+                item.onclick = () => {
+                    document.getElementById('chatBox').innerHTML = '';
+                    chatHistory = [...s.data];
+                    chatHistory.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'ai', m.content));
+                };
+                const delBtn = document.createElement('button');
+                delBtn.className = "btn-delete-history";
+                delBtn.innerHTML = "✖";
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    savedHistory.splice(index, 1);
+                    localStorage.setItem('bf_history_list', JSON.stringify(savedHistory));
+                    updateHistoryUI();
+                };
+                container.appendChild(item);
+                container.appendChild(delBtn);
+                list.appendChild(container);
+            });
+        }
+
+        window.clearChat = () => {
+            document.getElementById('chatBox').innerHTML = '';
+            chatHistory = [];
+            appendMessage('ai', "Sesi baru dimulai.");
+        };
+
+        function appendLoading() {
+            const id = "L" + Date.now();
+            const el = document.createElement('div'); el.id = id;
+            el.className = "p-4 text-xs text-blue-500 animate-pulse font-bold";
+            el.innerText = "ByteFury is analyzing...";
+            document.getElementById('chatBox').appendChild(el);
+            return id;
+        }
+
+        function removeLoading(id) { document.getElementById(id)?.remove(); }
+
+        document.getElementById('sendBtn').onclick = sendMessage;
+        document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
+        document.getElementById('openSidebar').onclick = () => { document.getElementById('sidebar').classList.remove('sidebar-closed'); document.getElementById('overlay').classList.remove('hidden'); };
+        document.getElementById('overlay').onclick = () => { document.getElementById('sidebar').classList.add('sidebar-closed'); document.getElementById('overlay').classList.add('hidden'); };
+    </script>
 </body>
 </html>
