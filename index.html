@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ByteFury AI - Early Access</title>
     
     <link rel="icon" type="image/png" href="images/logo.png">
@@ -16,7 +16,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1f2937; overflow-x: hidden; width: 100vw; }
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1f2937; overflow-x: hidden; }
 
         /* --- SPLASH & INTRO --- */
         #splash-screen { position: fixed; inset: 0; background-color: #f9fafb; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
@@ -28,29 +28,40 @@
         #sidebar { transition: transform 0.3s ease; z-index: 60; background-color: #f8fafc; border-right: 1px solid #e2e8f0; }
         .sidebar-closed { transform: translateX(-100%); }
 
-        /* --- RESPONSIVE MARKDOWN --- */
-        .markdown-body { line-height: 1.8; font-size: 0.95rem; color: #334155; overflow-wrap: break-word; word-break: break-word; }
-        .markdown-body p { margin-bottom: 1.25rem; white-space: pre-wrap; }
+        /* --- ADVANCED MARKDOWN STYLING (v6.1 - Mobile Optimized) --- */
+        .markdown-body { line-height: 1.8; font-size: 0.95rem; color: #334155; word-spacing: 0.05em; overflow-wrap: break-word; }
+        .markdown-body p { margin-bottom: 1.5rem; white-space: pre-wrap; }
         
-        /* Table Responsiveness Fix */
-        .table-container { width: 100%; overflow-x: auto; margin: 1.5rem 0; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
-        .markdown-body table { width: 100%; border-collapse: collapse; min-width: 400px; }
-        .markdown-body th, .markdown-body td { padding: 10px 14px; border: 1px solid #e2e8f0; text-align: left; }
-        .markdown-body th { background-color: #f8fafc; font-weight: 700; }
+        /* List & Alignment */
+        .markdown-body ul, .markdown-body ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+        .markdown-body li { margin-bottom: 0.75rem; }
+        .markdown-body strong { color: #1e293b; font-weight: 700; }
 
-        /* KaTeX Fix */
-        .katex-display { margin: 1rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; overflow-x: auto; overflow-y: hidden; }
+        /* Table Styling with Mobile Responsiveness */
+        .table-wrapper { width: 100%; overflow-x: auto; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
+        .markdown-body table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        .markdown-body th { background-color: #f8fafc; font-weight: 700; text-align: left; padding: 12px 16px; border: 1px solid #e2e8f0; }
+        .markdown-body td { padding: 12px 16px; border: 1px solid #e2e8f0; vertical-align: top; }
+        .markdown-body tr:nth-child(even) { background-color: #f9fafb; }
 
-        /* Code Block Fix */
-        .code-block-wrapper { margin: 1.5rem 0; border-radius: 12px; overflow: hidden; background: #1e293b; border: 1px solid #334155; max-width: 100%; }
-        .code-header { background: #1e293b; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-size: 10px; font-family: 'Fira Code', monospace; border-bottom: 1px solid #334155; }
-        .markdown-body pre { background: transparent !important; color: #e2e8f0 !important; padding: 1rem; overflow-x: auto; margin: 0; font-family: 'Fira Code', monospace; font-size: 13px; -webkit-overflow-scrolling: touch; }
+        /* KaTeX Spacing & Responsiveness */
+        .katex-display { margin: 1.5rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; overflow-x: auto; overflow-y: hidden; }
 
-        /* Bubbles */
-        .user-bubble { background-color: #3b82f6; color: white; border-radius: 18px 18px 4px 18px; max-width: 85%; }
+        /* Code Block */
+        .code-block-wrapper { margin: 1.5rem 0; border-radius: 12px; overflow: hidden; background: #1e293b; border: 1px solid #334155; width: 100%; }
+        .code-header { background: #1e293b; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-family: 'Fira Code', monospace; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #334155; }
+        .markdown-body pre { background: transparent !important; color: #e2e8f0 !important; padding: 1.25rem; overflow-x: auto; margin: 0; font-family: 'Fira Code', monospace; -webkit-overflow-scrolling: touch; }
+
+        /* --- BUBBLES --- */
+        .user-bubble { background-color: #3b82f6; color: white; border-radius: 20px 20px 4px 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); word-break: break-word; }
+        .history-item-container { position: relative; width: 100%; }
+        .history-item { transition: all 0.2s; cursor: pointer; border-radius: 10px; font-size: 13px; color: #475569; padding: 12px 40px 12px 12px; border-bottom: 1px solid #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .history-item:hover { background-color: #f1f5f9; color: #2563eb; }
+        .btn-delete-history { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0; transition: opacity 0.2s; padding: 6px; color: #94a3b8; border-radius: 6px; z-index: 10; }
+        .history-item-container:hover .btn-delete-history { opacity: 1; }
     </style>
 </head>
-<body class="h-screen flex overflow-hidden">
+<body class="h-screen flex">
 
     <div id="splash-screen">
         <div class="flex flex-col items-center gap-2">
@@ -61,40 +72,42 @@
 
     <div id="intro-page">
         <div class="max-w-xl text-center px-8 flex flex-col items-center">
-            <img src="images/logoo.png" alt="Logo" class="w-48 mb-8">
-            <p class="text-gray-600 text-sm mb-10 leading-relaxed">
-                Platform AI karya anak bangsa oleh <br>
-                <span class="text-blue-600 font-bold">Firdy, Carvagie, dan Randy</span>
+            <img src="images/logoo.png" alt="Logo" class="w-48 lg:w-64 mb-8 drop-shadow-2xl">
+            <p class="text-gray-600 text-base mb-10 leading-relaxed">
+                Platform kecerdasan buatan karya anak bangsa. Dikembangkan dengan dedikasi oleh <br>
+                <span class="text-blue-600 font-bold">Firdy, Carvagie, dan Randy</span> <br>
+                dari <span class="italic font-semibold">ByteFury Studio</span>.
             </p>
-            <button onclick="startApp()" class="w-full max-w-xs bg-blue-600 text-white py-4 rounded-full font-bold shadow-xl active:scale-95 transition-all">Mulai Percakapan</button>
+            <button onclick="startApp()" class="w-full max-w-xs bg-blue-600 text-white py-5 rounded-full font-bold shadow-xl hover:bg-blue-700 transition-all active:scale-95">Mulai Percakapan</button>
         </div>
     </div>
 
     <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 border-r flex flex-col sidebar-closed lg:relative lg:transform-none">
         <div class="p-6 flex flex-col h-full">
-            <div class="mb-4 text-gray-400 font-bold text-[10px] uppercase tracking-widest">History</div>
-            <button onclick="clearChat()" class="w-full bg-white border border-gray-200 py-2.5 rounded-xl text-[10px] font-bold mb-4">+ Chat Baru</button>
+            <div class="mb-8 text-gray-400 font-bold text-[10px] uppercase tracking-widest">History</div>
+            <button onclick="clearChat()" class="w-full bg-white border border-gray-200 py-3 rounded-xl text-[10px] font-bold mb-6 hover:bg-gray-50">+ Chat Baru</button>
             <div id="historyList" class="flex-1 overflow-y-auto space-y-1"></div>
         </div>
     </aside>
 
-    <div id="overlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 hidden lg:hidden"></div>
+    <div id="overlay" class="fixed inset-0 bg-black/10 backdrop-blur-sm z-50 hidden lg:hidden"></div>
 
-    <div id="main-content" class="flex-1 flex flex-col h-full bg-white relative">
-        <header class="px-6 py-4 flex items-center border-b bg-white/80 backdrop-blur-md z-40">
+    <div id="main-content" class="flex-1 flex flex-col h-full bg-white">
+        <header class="px-8 py-4 flex items-center border-b sticky top-0 bg-white/90 backdrop-blur-md z-40">
             <button id="openSidebar" class="lg:hidden mr-4 text-gray-600 text-xl">☰</button>
-            <h1 class="text-md font-black italic uppercase">ByteFury <span class="text-blue-600 not-italic">AI</span></h1>
+            <h1 class="text-lg font-black italic uppercase">ByteFury <span class="text-blue-600 not-italic">AI</span></h1>
         </header>
 
-        <main id="chatBox" class="flex-1 overflow-y-auto px-4 md:px-6 py-8 space-y-8 max-w-4xl mx-auto w-full"></main>
+        <main id="chatBox" class="flex-1 overflow-y-auto px-6 py-10 space-y-10 max-w-4xl mx-auto w-full"></main>
 
-        <footer class="p-4 md:p-6 border-t bg-white">
-            <div class="max-w-3xl mx-auto flex items-end gap-2">
-                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-2xl flex items-center px-4 py-1 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+        <footer class="p-6 bg-white">
+            <div class="max-w-3xl mx-auto flex items-end gap-3">
+                <div class="flex-1 bg-gray-50 border border-gray-200 rounded-2xl flex items-center px-5 py-2 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                     <textarea id="userInput" rows="1" class="flex-1 bg-transparent py-2 text-sm focus:outline-none resize-none" placeholder="Tanya sesuatu..."></textarea>
                 </div>
-                <button id="sendBtn" class="bg-blue-600 text-white p-3.5 rounded-xl shadow-md hover:bg-blue-700 active:scale-90 transition-all">➤</button>
+                <button id="sendBtn" class="bg-blue-600 text-white p-4 rounded-xl shadow-lg hover:bg-blue-700 active:scale-90 transition-all">➤</button>
             </div>
+            <p class="text-[9px] text-center text-gray-400 mt-4 font-bold tracking-widest uppercase">ByteFury Studio</p>
         </footer>
     </div>
 
@@ -105,36 +118,27 @@
 
         const renderer = new marked.Renderer();
         
-        // Perbaikan Renderer Tabel: Menggunakan tag wrapper untuk scroll horizontal
-        renderer.table = (header, body) => {
-            return `<div class="table-container"><table><thead>${header}</thead><tbody>${body}</tbody></table></div>`;
-        };
-
-        // Perbaikan Renderer Code: Menangani objek token (v11.x+)
-        renderer.code = function(token) {
-            const codeText = typeof token === 'object' ? token.text : arguments[0];
-            const lang = (typeof token === 'object' ? token.lang : arguments[1]) || 'code';
-            const b64 = btoa(unescape(encodeURIComponent(codeText)));
-            
-            return `<div class="code-block-wrapper">
-                <div class="code-header"><span>${lang}</span>
-                    <button onclick="copyCode(this, '${b64}')" class="hover:text-white transition-colors">Copy</button>
-                </div>
-                <pre><code>${codeText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+        // Modifikasi Renderer Tabel untuk pembungkus responsif
+        renderer.table = function(header, body) {
+            return `<div class="table-wrapper">
+                <table>
+                    <thead>${header}</thead>
+                    <tbody>${body}</tbody>
+                </table>
             </div>`;
         };
 
-        marked.setOptions({ renderer, breaks: true, gfm: true });
-
-        // Fungsi Copy Global
-        window.copyCode = (btn, b64) => {
-            const text = decodeURIComponent(escape(atob(b64)));
-            navigator.clipboard.writeText(text).then(() => {
-                const old = btn.innerText;
-                btn.innerText = "Copied!";
-                setTimeout(() => btn.innerText = old, 2000);
-            });
+        renderer.code = function({text, lang}) {
+            const content = text || '';
+            const b64 = btoa(unescape(encodeURIComponent(content)));
+            return `<div class="code-block-wrapper">
+                <div class="code-header"><span>${lang || 'code'}</span>
+                    <button onclick="copyToClipboard(this, '${b64}')" class="btn-copy-minimal">Copy</button>
+                </div>
+                <pre><code>${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+            </div>`;
         };
+        marked.setOptions({ renderer, breaks: true, gfm: true });
 
         const openai = new OpenAI({
             baseURL: "https://openrouter.ai/api/v1",
@@ -144,30 +148,27 @@
 
         const sysPrompt = { 
             role: "system", 
-            content: "Kamu adalah ByteFury AI dikembangkan oleh Firdy Ridho Fillah, Carvagie Adyatma, Randy Mayysa dari ByteFury Studio. Gunakan tabel Markdown untuk perbandingan. Gunakan poin-poin rapi. Gunakan LaTeX untuk rumus matematika. Selalu bertanya di akhir jawaban." 
+            content: "Kamu adalah ByteFury AI dan kamu adalah AI baru yang di ciptakan dan di kembang kan oleh Firdy Ridho Fillah, Carvagie Adyatma, Randy Mayysa, Mereka dari ByteFury Studio Indonesia. Selalu gunakan tabel Markdown untuk perbandingan. Gunakan poin-poin yang rapi dengan format 'Item: Penjelasan' agar titik dua sejajar. Pastikan ada spasi yang benar antar kata. Gunakan LaTeX untuk rumus matematika, Serta selalu bertanya setelah menjawab pertanyaan agar kamu bisa lebih aktif." 
         };
 
         let chatHistory = [];
-        let savedHistory = JSON.parse(localStorage.getItem('bf_history_v2')) || [];
+        let savedHistory = JSON.parse(localStorage.getItem('bf_history_list')) || [];
 
         window.onload = () => {
-            setTimeout(() => document.getElementById('splash-screen').classList.add('splash-hidden'), 2000);
+            setTimeout(() => document.getElementById('splash-screen').classList.add('splash-hidden'), 2500);
             updateHistoryUI();
         };
 
         window.startApp = () => {
             document.getElementById('intro-page').classList.add('intro-hidden');
-            if (chatBox.children.length === 0) appendMessage('ai', "Halo! Saya **ByteFury AI**. Ada yang bisa saya bantu hari ini?");
+            if (chatBox.children.length === 0) appendMessage('ai', "Halo! Saya **ByteFury AI**. Silakan ajukan pertanyaan atau minta perbandingan sesuatu.");
         };
 
         async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const text = input.value.trim();
+            const text = document.getElementById('userInput').value.trim();
             if (!text) return;
-            
             appendMessage('user', text);
-            input.value = '';
-            input.style.height = 'auto';
+            document.getElementById('userInput').value = '';
             const loadingId = appendLoading();
 
             try {
@@ -182,52 +183,62 @@
                 saveSession(text);
             } catch (err) {
                 removeLoading(loadingId);
-                appendMessage('ai', "Maaf, terjadi gangguan koneksi.");
+                appendMessage('ai', "Maaf, koneksi terputus.");
             }
         }
 
         function appendMessage(role, text) {
-            const chatBox = document.getElementById('chatBox');
             const wrap = document.createElement('div');
             wrap.className = "flex flex-col " + (role === 'user' ? 'items-end' : 'items-start');
-            
             const msg = document.createElement('div');
-            msg.className = role === 'user' ? "user-bubble px-4 py-2.5 text-sm shadow-sm" : "markdown-body w-full";
+            msg.className = role === 'user' ? "user-bubble px-5 py-3 text-sm max-w-[90%] md:max-w-[85%]" : "markdown-body p-2 w-full max-w-full relative group";
             
             if (role === 'ai') {
                 msg.innerHTML = marked.parse(text);
             } else {
                 msg.innerText = text;
             }
-            
             wrap.appendChild(msg);
-            chatBox.appendChild(wrap);
-            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+            document.getElementById('chatBox').appendChild(wrap);
+            document.getElementById('chatBox').scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
         }
 
         function saveSession(text) {
             if (chatHistory.length === 2) {
-                savedHistory.unshift({ id: Date.now(), title: text.substring(0, 30), data: [...chatHistory] });
+                savedHistory.unshift({ id: Date.now(), title: text.substring(0, 30) + "...", data: [...chatHistory] });
             } else if (savedHistory.length > 0) {
                 savedHistory[0].data = [...chatHistory];
             }
-            localStorage.setItem('bf_history_v2', JSON.stringify(savedHistory));
+            localStorage.setItem('bf_history_list', JSON.stringify(savedHistory));
             updateHistoryUI();
         }
 
         function updateHistoryUI() {
             const list = document.getElementById('historyList');
             list.innerHTML = '';
-            savedHistory.forEach((s, i) => {
+            savedHistory.forEach((s, index) => {
+                const container = document.createElement('div');
+                container.className = "history-item-container";
                 const item = document.createElement('div');
-                item.className = "p-3 text-xs text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer truncate border-b border-gray-50";
+                item.className = "history-item";
                 item.innerText = s.title;
                 item.onclick = () => {
                     document.getElementById('chatBox').innerHTML = '';
                     chatHistory = [...s.data];
                     chatHistory.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'ai', m.content));
                 };
-                list.appendChild(item);
+                const delBtn = document.createElement('button');
+                delBtn.className = "btn-delete-history";
+                delBtn.innerHTML = "✖";
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    savedHistory.splice(index, 1);
+                    localStorage.setItem('bf_history_list', JSON.stringify(savedHistory));
+                    updateHistoryUI();
+                };
+                container.appendChild(item);
+                container.appendChild(delBtn);
+                list.appendChild(container);
             });
         }
 
@@ -240,33 +251,28 @@
         function appendLoading() {
             const id = "L" + Date.now();
             const el = document.createElement('div'); el.id = id;
-            el.className = "text-xs text-blue-500 animate-pulse font-bold p-2";
-            el.innerText = "ByteFury is typing...";
+            el.className = "p-4 text-xs text-blue-500 animate-pulse font-bold";
+            el.innerText = "ByteFury is analyzing...";
             document.getElementById('chatBox').appendChild(el);
             return id;
         }
 
         function removeLoading(id) { document.getElementById(id)?.remove(); }
 
-        document.getElementById('sendBtn').onclick = sendMessage;
-        document.getElementById('userInput').onkeydown = (e) => { 
-            if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-        };
-        
-        // Auto resize textarea
-        document.getElementById('userInput').oninput = function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
+        // Copy Function
+        window.copyToClipboard = (btn, b64) => {
+            const text = decodeURIComponent(escape(atob(b64)));
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.innerText;
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = original, 2000);
+            });
         };
 
-        document.getElementById('openSidebar').onclick = () => { 
-            document.getElementById('sidebar').classList.remove('sidebar-closed'); 
-            document.getElementById('overlay').classList.remove('hidden'); 
-        };
-        document.getElementById('overlay').onclick = () => { 
-            document.getElementById('sidebar').classList.add('sidebar-closed'); 
-            document.getElementById('overlay').classList.add('hidden'); 
-        };
+        document.getElementById('sendBtn').onclick = sendMessage;
+        document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
+        document.getElementById('openSidebar').onclick = () => { document.getElementById('sidebar').classList.remove('sidebar-closed'); document.getElementById('overlay').classList.remove('hidden'); };
+        document.getElementById('overlay').onclick = () => { document.getElementById('sidebar').classList.add('sidebar-closed'); document.getElementById('overlay').classList.add('hidden'); };
     </script>
 </body>
 </html>
