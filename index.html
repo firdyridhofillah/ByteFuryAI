@@ -28,8 +28,8 @@
         #sidebar { transition: transform 0.3s ease; z-index: 60; background-color: #f8fafc; border-right: 1px solid #e2e8f0; }
         .sidebar-closed { transform: translateX(-100%); }
 
-        /* --- ADVANCED MARKDOWN STYLING (v6.0) --- */
-        .markdown-body { line-height: 1.8; font-size: 0.95rem; color: #334155; word-spacing: 0.05em; }
+        /* --- ADVANCED MARKDOWN STYLING (v6.1 - Mobile Optimized) --- */
+        .markdown-body { line-height: 1.8; font-size: 0.95rem; color: #334155; word-spacing: 0.05em; overflow-wrap: break-word; }
         .markdown-body p { margin-bottom: 1.5rem; white-space: pre-wrap; }
         
         /* List & Alignment */
@@ -37,22 +37,23 @@
         .markdown-body li { margin-bottom: 0.75rem; }
         .markdown-body strong { color: #1e293b; font-weight: 700; }
 
-        /* Table Styling with Borders */
-        .markdown-body table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+        /* Table Styling with Mobile Responsiveness */
+        .table-wrapper { width: 100%; overflow-x: auto; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; border-radius: 8px; -webkit-overflow-scrolling: touch; }
+        .markdown-body table { width: 100%; border-collapse: collapse; min-width: 500px; }
         .markdown-body th { background-color: #f8fafc; font-weight: 700; text-align: left; padding: 12px 16px; border: 1px solid #e2e8f0; }
         .markdown-body td { padding: 12px 16px; border: 1px solid #e2e8f0; vertical-align: top; }
         .markdown-body tr:nth-child(even) { background-color: #f9fafb; }
 
-        /* KaTeX Spacing */
-        .katex-display { margin: 1.5rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; }
+        /* KaTeX Spacing & Responsiveness */
+        .katex-display { margin: 1.5rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; overflow-x: auto; overflow-y: hidden; }
 
         /* Code Block */
-        .code-block-wrapper { margin: 1.5rem 0; border-radius: 12px; overflow: hidden; background: #1e293b; border: 1px solid #334155; }
+        .code-block-wrapper { margin: 1.5rem 0; border-radius: 12px; overflow: hidden; background: #1e293b; border: 1px solid #334155; width: 100%; }
         .code-header { background: #1e293b; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-family: 'Fira Code', monospace; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #334155; }
-        .markdown-body pre { background: transparent !important; color: #e2e8f0 !important; padding: 1.25rem; overflow-x: auto; margin: 0; font-family: 'Fira Code', monospace; }
+        .markdown-body pre { background: transparent !important; color: #e2e8f0 !important; padding: 1.25rem; overflow-x: auto; margin: 0; font-family: 'Fira Code', monospace; -webkit-overflow-scrolling: touch; }
 
         /* --- BUBBLES --- */
-        .user-bubble { background-color: #3b82f6; color: white; border-radius: 20px 20px 4px 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); }
+        .user-bubble { background-color: #3b82f6; color: white; border-radius: 20px 20px 4px 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); word-break: break-word; }
         .history-item-container { position: relative; width: 100%; }
         .history-item { transition: all 0.2s; cursor: pointer; border-radius: 10px; font-size: 13px; color: #475569; padding: 12px 40px 12px 12px; border-bottom: 1px solid #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
         .history-item:hover { background-color: #f1f5f9; color: #2563eb; }
@@ -65,7 +66,7 @@
     <div id="splash-screen">
         <div class="flex flex-col items-center gap-2">
             <h1 class="text-3xl font-black tracking-tighter italic">BYTEFURY <span class="text-blue-600 not-italic">AI</span></h1>
-            <p class="opacity-50 text-[10px] font-bold tracking-[0.5em] uppercase text-blue-600 italic">Developed ByteFury Studio</p>
+            <p class="opacity-50 text-[10px] font-bold tracking-[0.5em] uppercase text-blue-600 italic">Developed By ByteFury Studio</p>
         </div>
     </div>
 
@@ -116,6 +117,17 @@
         marked.use(markedKatex({ throwOnError: false, output: 'html' }));
 
         const renderer = new marked.Renderer();
+        
+        // Modifikasi Renderer Tabel untuk pembungkus responsif
+        renderer.table = function(header, body) {
+            return `<div class="table-wrapper">
+                <table>
+                    <thead>${header}</thead>
+                    <tbody>${body}</tbody>
+                </table>
+            </div>`;
+        };
+
         renderer.code = function({text, lang}) {
             const content = text || '';
             const b64 = btoa(unescape(encodeURIComponent(content)));
@@ -134,7 +146,6 @@
             dangerouslyAllowBrowser: true
         });
 
-        // System Prompt khusus untuk kerapihan format
         const sysPrompt = { 
             role: "system", 
             content: "Kamu adalah ByteFury AI dan kamu adalah AI baru yang di ciptakan dan di kembang kan oleh Firdy Ridho Fillah, Carvagie Adyatma, Randy Mayysa, Mereka dari ByteFury Studio Indonesia. Selalu gunakan tabel Markdown untuk perbandingan. Gunakan poin-poin yang rapi dengan format 'Item: Penjelasan' agar titik dua sejajar. Pastikan ada spasi yang benar antar kata. Gunakan LaTeX untuk rumus matematika, Serta selalu bertanya setelah menjawab pertanyaan agar kamu bisa lebih aktif." 
@@ -150,7 +161,7 @@
 
         window.startApp = () => {
             document.getElementById('intro-page').classList.add('intro-hidden');
-            if (chatBox.children.length === 0) appendMessage('ai', "Halo! Saya **ByteFury AI**. Silakan ajukan pertanyaan atau minta perbandingan sesuatu.");
+            if (chatBox.children.length === 0) appendMessage('ai', "Halo! Saya **ByteFury AI**. Silakan ajukan pertanyaan atau minta sesuatu.");
         };
 
         async function sendMessage() {
@@ -180,7 +191,7 @@
             const wrap = document.createElement('div');
             wrap.className = "flex flex-col " + (role === 'user' ? 'items-end' : 'items-start');
             const msg = document.createElement('div');
-            msg.className = role === 'user' ? "user-bubble px-5 py-3 text-sm max-w-[85%]" : "markdown-body p-2 w-full max-w-full relative group";
+            msg.className = role === 'user' ? "user-bubble px-5 py-3 text-sm max-w-[90%] md:max-w-[85%]" : "markdown-body p-2 w-full max-w-full relative group";
             
             if (role === 'ai') {
                 msg.innerHTML = marked.parse(text);
@@ -247,6 +258,16 @@
         }
 
         function removeLoading(id) { document.getElementById(id)?.remove(); }
+
+        // Copy Function
+        window.copyToClipboard = (btn, b64) => {
+            const text = decodeURIComponent(escape(atob(b64)));
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.innerText;
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = original, 2000);
+            });
+        };
 
         document.getElementById('sendBtn').onclick = sendMessage;
         document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
